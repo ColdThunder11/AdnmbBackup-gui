@@ -63,7 +63,7 @@ namespace AdnmbBackup_gui
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
                 int pageCount = replyCount / 19;
-                if (replyCount / pageCount != 0) pageCount++;
+                if (replyCount % pageCount != 0) pageCount++;
                 JArray contentJA = fpjson["replys"].ToObject<JArray>();
                 for (var page = 2; page <= pageCount; page++)
                 {
