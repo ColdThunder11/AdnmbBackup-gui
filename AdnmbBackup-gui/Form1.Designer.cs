@@ -39,7 +39,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(132, 39);
+            this.textBox1.Location = new System.Drawing.Point(125, 21);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(198, 28);
             this.textBox1.TabIndex = 0;
@@ -47,7 +47,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(28, 42);
+            this.label1.Location = new System.Drawing.Point(21, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(98, 18);
             this.label1.TabIndex = 1;
@@ -56,7 +56,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(28, 80);
+            this.label2.Location = new System.Drawing.Point(21, 101);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(368, 18);
             this.label2.TabIndex = 2;
@@ -65,7 +65,7 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(143, 118);
+            this.linkLabel1.Location = new System.Drawing.Point(136, 139);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(116, 18);
             this.linkLabel1.TabIndex = 4;
@@ -75,7 +75,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(331, 110);
+            this.button1.Location = new System.Drawing.Point(394, 131);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(119, 34);
             this.button1.TabIndex = 5;
@@ -86,7 +86,7 @@
             // linkLabel2
             // 
             this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(28, 118);
+            this.linkLabel2.Location = new System.Drawing.Point(21, 139);
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(80, 18);
             this.linkLabel2.TabIndex = 6;
@@ -97,7 +97,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(351, 42);
+            this.label4.Location = new System.Drawing.Point(21, 62);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(62, 18);
             this.label4.TabIndex = 7;
@@ -107,7 +107,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(494, 177);
+            this.ClientSize = new System.Drawing.Size(532, 189);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.button1);
@@ -118,6 +118,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "A岛匿名版备份器";
+            this.Shown += new System.EventHandler(this.Form1_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
