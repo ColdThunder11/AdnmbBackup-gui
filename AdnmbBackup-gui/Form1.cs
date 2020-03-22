@@ -103,6 +103,7 @@ namespace AdnmbBackup_gui
                 return;
             }
             ConvertToText(path);
+            ConvertToTextPoOnly(path);
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -129,12 +130,31 @@ namespace AdnmbBackup_gui
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
             File.WriteAllText(path.Replace("json", "txt"), sb.ToString());
-            var lines = File.ReadAllLines(path.Replace("json", "txt"));
-            //for (var i = 0; i < lines.Length; i++)
-            //{
-            //    lines[i] = lines[i].Trim();
-            //}
-            File.WriteAllLines(path.Replace("json", "txt"), lines);
+        }
+        static void ConvertToTextPoOnly(string path)
+        {
+            var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+            var sb = new StringBuilder();
+            sb.Append(jo["userid"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            if (jo["title"].ToString() != "无标题")
+            {
+                sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
+            }
+            sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
+            var ja = jo["replys"].ToObject<JArray>();
+            var poid = jo["userid"].ToString();
+            for (int i = 0; i < ja.Count; i++)
+            {
+                if (ja[i]["userid"].ToString() == poid)
+                {
+                    sb.Append("----------------------------------------"); sb.Append(Environment.NewLine);
+                    sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                    sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
+                }
+            }
+            File.WriteAllText(path.Replace(".json", "_po_only.txt"), sb.ToString());
         }
         static string ContentProcess(string content)
         {
@@ -230,6 +250,7 @@ namespace AdnmbBackup_gui
                         var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
                         File.WriteAllText(path, fjsonstr);
                         ConvertToText(path);
+                        ConvertToTextPoOnly(path);
                     }
                     catch
                     {
