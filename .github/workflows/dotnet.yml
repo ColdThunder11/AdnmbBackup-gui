@@ -34,4 +34,4 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: AdnmbBackup-gui
-        path: D:\a\LrcHelper\LrcHelper\LrcHelper\bin\Release\AdnmbBackup-gui.exe
+        path: AdnmbBackup-gui\bin\Release\
