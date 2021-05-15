@@ -28,7 +28,7 @@ jobs:
       run: nuget restore AdnmbBackup-gui/AdnmbBackup-gui.sln
 
     - name: Build 
-      run: msbuild AdnmbBackup-gui/AdnmbBackup-gui.slnAdnmbBackup-gui/AdnmbBackup-gui.sln /p:Configuration=Release /p:DebugSymbols=false /p:DebugType=None
+      run: msbuild AdnmbBackup-gui/AdnmbBackup-gui.sln /p:Configuration=Release /p:DebugSymbols=false /p:DebugType=None
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
