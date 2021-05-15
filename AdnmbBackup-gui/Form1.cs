@@ -45,6 +45,7 @@ namespace AdnmbBackup_gui
                 string url = "https://nmb.fastmirror.org/Api/thread";
                 var cookie = File.ReadAllText("cookie.txt");
                 CookieContainer cookieContainer = new CookieContainer();
+                cookieContainer.Add(new Cookie("memberUserspapapa", cookie, "/", "nmb.fastmirror.org"));
                 cookieContainer.Add(new Cookie("userhash", cookie, "/", "nmb.fastmirror.org"));
                 HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
                 handler.CookieContainer = cookieContainer;
