@@ -129,7 +129,7 @@ namespace AdnmbBackup_gui
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
-            File.WriteAllText(path.Replace("json", "txt"), sb.ToString());
+            File.WriteAllText(path.Replace("json", "txt"), sb.ToString(), Encoding.GetEncoding("gb2312"));
         }
         static void ConvertToTextPoOnly(string path)
         {
@@ -154,7 +154,7 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.txt"), sb.ToString());
+            File.WriteAllText(path.Replace(".json", "_po_only.txt"), sb.ToString(), Encoding.GetEncoding("gb2312"));
         }
         static string ContentProcess(string content)
         {
