@@ -124,7 +124,7 @@ namespace AdnmbBackup_gui
             var ja = jo["replys"].ToObject<JArray>();
             for (int i = 0; i < ja.Count; i++)
             {
-                sb.Append("----------------------------------------"); sb.Append(Environment.NewLine);
+                sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
                 sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
@@ -148,7 +148,7 @@ namespace AdnmbBackup_gui
             {
                 if (ja[i]["userid"].ToString() == poid)
                 {
-                    sb.Append("----------------------------------------"); sb.Append(Environment.NewLine);
+                    sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
                     sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                     sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
