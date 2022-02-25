@@ -57,7 +57,7 @@ namespace AdnmbBackup_gui
                 label4.Text = "0";
                 t.Wait();
                 var result = t.Result;
-                label4.Text = "5";
+                label4.Text = result;
                 var t2 = result.Content.ReadAsByteArrayAsync();
                 t2.Wait();
                 var bytes = t2.Result;
