@@ -59,10 +59,7 @@ namespace AdnmbBackup_gui
                 label4.Text = "0";
                 var t2 = result.Content.ReadAsStringAsync();
                 t2.Wait();
-                var bytes = t2.Result;
-                var str = ReadGzip(bytes);
-                label4.Text = str;
-                var fpjson = JsonConvert.DeserializeObject<JObject>(str);
+                var fpjson = JsonConvert.DeserializeObject<JObject>(t2);
                 label4.Text = "1";
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
                 label4.Text = "2";
