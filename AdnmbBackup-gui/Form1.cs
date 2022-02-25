@@ -51,7 +51,8 @@ namespace AdnmbBackup_gui
                 HttpClient http = new HttpClient(handler);
                 http.DefaultRequestHeaders.Add("Host", "nmb.fastmirror.org");
                 http.DefaultRequestHeaders.Add("Accept", "application/json");
-                http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 HavfunClient-AdnmbBackup");
+                http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+                http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
                 label4.Text = "正在获取第1页";
                 var t = http.GetAsync(url + "?id=" + id + "&page=1");
                 t.Wait();
@@ -59,7 +60,10 @@ namespace AdnmbBackup_gui
                 label4.Text = "0";
                 var t2 = result.Content.ReadAsStringAsync();
                 t2.Wait();
-                var fpjson = JsonConvert.DeserializeObject<JObject>(t2);
+                var bytes = t2.Result;
+                var str = ReadGzip(bytes);
+                label4.Text = str;
+                var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                 label4.Text = "1";
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
                 label4.Text = "2";
