@@ -54,11 +54,10 @@ namespace AdnmbBackup_gui
                 http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 HavfunClient-AdnmbBackup");
                 label4.Text = "正在获取第1页";
                 var t = http.GetAsync(url + "?id=" + id + "&page=1");
-                label4.Text = "0";
                 t.Wait();
                 var result = t.Result;
-                label4.Text = result;
-                var t2 = result.Content.ReadAsByteArrayAsync();
+                label4.Text = "0";
+                var t2 = result.Content.ReadAsStringAsync();
                 t2.Wait();
                 var bytes = t2.Result;
                 var str = ReadGzip(bytes);
