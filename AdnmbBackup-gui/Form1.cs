@@ -62,9 +62,9 @@ namespace AdnmbBackup_gui
                 var str = ReadGzip(bytes);
                 label4.Text = str;
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                label4.Text = fpjson;
+                label4.Text = "1";
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
-                label4.Text = replyCount;
+                label4.Text = "2";
                 int pageCount = replyCount / 19;
                 if (replyCount % pageCount != 0) pageCount++;
                 JArray contentJA = fpjson["replys"].ToObject<JArray>();
