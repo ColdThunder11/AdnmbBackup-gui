@@ -62,7 +62,9 @@ namespace AdnmbBackup_gui
                 var str = ReadGzip(bytes);
                 label4.Text = str;
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
+                label4.Text = fpjson;
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
+                label4.Text = replyCount;
                 int pageCount = replyCount / 19;
                 if (replyCount % pageCount != 0) pageCount++;
                 JArray contentJA = fpjson["replys"].ToObject<JArray>();
@@ -100,7 +102,6 @@ namespace AdnmbBackup_gui
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                label4.Text = "啊哦，出错了";
                 return;
             }
             ConvertToText(path);
