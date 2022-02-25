@@ -60,6 +60,7 @@ namespace AdnmbBackup_gui
                 t2.Wait();
                 var bytes = t2.Result;
                 var str = ReadGzip(bytes);
+                label4.Text = str;
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
                 int pageCount = replyCount / 19;
