@@ -152,14 +152,20 @@ namespace AdnmbBackup_gui
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
-            var poid = jo["user_hash"].ToString();
+            var poid = new HashSet<string>();
+            poid.Add(jo["user_hash"].ToString());
             if (File.Exists(po_path) && File.ReadAllText(po_path) != "")
             {
-                poid = File.ReadAllText(po_path).Split(' ')[0];
+                // read poid line by line
+                var lines = File.ReadAllLines(po_path);
+                foreach (var line in lines)
+                {
+                    poid.Add(line.Split(' ')[0]);
+                }
             }
             for (int i = 0; i < ja.Count; i++)
             {
-                if (ja[i]["user_hash"].ToString() == poid)
+                if (poid.Contains(ja[i]["user_hash"].ToString()))
                 {
                     sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
                     sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
