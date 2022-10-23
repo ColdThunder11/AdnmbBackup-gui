@@ -57,19 +57,16 @@ namespace AdnmbBackup_gui
                 var t = http.GetAsync(url + "?id=" + id + "&page=1");
                 t.Wait();
                 var result = t.Result;
-                label4.Text = "5";
                 var t2 = result.Content.ReadAsByteArrayAsync();
                 t2.Wait();
                 var bytes = t2.Result;
                 var str = ReadGzip(bytes);
                 label4.Text = str;
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                label4.Text = "1";
-                var replyCount = int.Parse(fpjson["replyCount"].ToString());
-                label4.Text = "2";
+                var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                 int pageCount = replyCount / 19;
                 if (replyCount % pageCount != 0) pageCount++;
-                JArray contentJA = fpjson["replys"].ToObject<JArray>();
+                JArray contentJA = fpjson["Replies"].ToObject<JArray>();
                 for (var page = 2; page <= pageCount; page++)
                 {
                     label4.Text = "正在获取第" + page + "页";
@@ -81,7 +78,7 @@ namespace AdnmbBackup_gui
                     bytes = t2.Result;
                     str = ReadGzip(bytes);
                     var jo = JsonConvert.DeserializeObject<JObject>(str);
-                    JArray ja = jo["replys"].ToObject<JArray>();
+                    JArray ja = jo["Replies"].ToObject<JArray>();
                     var rpcount = ja.Count;
                     for (int j = 0; j < rpcount; j++)
                     {
@@ -90,14 +87,14 @@ namespace AdnmbBackup_gui
                 }
                 for (var index = 0; index < contentJA.Count; index++)
                 {
-                    if (contentJA[index]["title"].ToString() == "广告")
+                    if (contentJA[index]["user_hash"].ToString() == "Tips")
                     {
                         contentJA.RemoveAt(index);
                         index--;
                     }
                 }
                 label4.Text = "完成";
-                fpjson["replys"].Replace(contentJA);
+                fpjson["Replies"].Replace(contentJA);
                 var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
                 File.WriteAllText(path, fjsonstr);
             }
@@ -118,18 +115,18 @@ namespace AdnmbBackup_gui
         {
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
-            sb.Append(jo["userid"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
             sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
-            var ja = jo["replys"].ToObject<JArray>();
+            var ja = jo["Replies"].ToObject<JArray>();
             for (int i = 0; i < ja.Count; i++)
             {
                 sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
-                sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
@@ -139,22 +136,22 @@ namespace AdnmbBackup_gui
         {
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
-            sb.Append(jo["userid"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
             sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
-            var ja = jo["replys"].ToObject<JArray>();
-            var poid = jo["userid"].ToString();
+            var ja = jo["Replies"].ToObject<JArray>();
+            var poid = jo["user_hash"].ToString();
             for (int i = 0; i < ja.Count; i++)
             {
-                if (ja[i]["userid"].ToString() == poid)
+                if (ja[i]["user_hash"].ToString() == poid)
                 {
                     sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
-                    sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
-                    sb.Append("N."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                    sb.Append("No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
@@ -220,10 +217,10 @@ namespace AdnmbBackup_gui
                         var bytes = t2.Result;
                         var str = ReadGzip(bytes);
                         var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                        var replyCount = int.Parse(fpjson["replyCount"].ToString());
+                        var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                         int pageCount = replyCount / 19;
                         if (replyCount % pageCount != 0) pageCount++;
-                        JArray contentJA = fpjson["replys"].ToObject<JArray>();
+                        JArray contentJA = fpjson["Replies"].ToObject<JArray>();
                         for (var page = 2; page <= pageCount; page++)
                         {
                             label4.Text = ">>" + id + " 正在获取第" + page + "页";
@@ -235,7 +232,7 @@ namespace AdnmbBackup_gui
                             bytes = t2.Result;
                             str = ReadGzip(bytes);
                             var jo = JsonConvert.DeserializeObject<JObject>(str);
-                            JArray ja = jo["replys"].ToObject<JArray>();
+                            JArray ja = jo["Replies"].ToObject<JArray>();
                             var rpcount = ja.Count;
                             for (int j = 0; j < rpcount; j++)
                             {
@@ -244,13 +241,13 @@ namespace AdnmbBackup_gui
                         }
                         for (var index = 0; index < contentJA.Count; index++)
                         {
-                            if (contentJA[index]["title"].ToString() == "广告")
+                            if (contentJA[index]["user_hash"].ToString() == "Tips")
                             {
                                 contentJA.RemoveAt(index);
                                 index--;
                             }
                         }
-                        fpjson["replys"].Replace(contentJA);
+                        fpjson["Replies"].Replace(contentJA);
                         var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
                         File.WriteAllText(path, fjsonstr);
                         ConvertToText(path);

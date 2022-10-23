@@ -1,9 +1,8 @@
 
 on:
   push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+  workflow_dispatch:
   
 jobs:
   build:
@@ -13,6 +12,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
       name: Checkout Code
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
