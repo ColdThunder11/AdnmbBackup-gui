@@ -63,10 +63,10 @@ namespace AdnmbBackup_gui
                 var str = ReadGzip(bytes);
                 label4.Text = str;
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                var replyCount = int.Parse(fpjson["replyCount"].ToString());
+                var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                 int pageCount = replyCount / 19;
                 if (replyCount % pageCount != 0) pageCount++;
-                JArray contentJA = fpjson["replys"].ToObject<JArray>();
+                JArray contentJA = fpjson["Replies"].ToObject<JArray>();
                 for (var page = 2; page <= pageCount; page++)
                 {
                     label4.Text = "正在获取第" + page + "页";
@@ -78,7 +78,7 @@ namespace AdnmbBackup_gui
                     bytes = t2.Result;
                     str = ReadGzip(bytes);
                     var jo = JsonConvert.DeserializeObject<JObject>(str);
-                    JArray ja = jo["replys"].ToObject<JArray>();
+                    JArray ja = jo["Replies"].ToObject<JArray>();
                     var rpcount = ja.Count;
                     for (int j = 0; j < rpcount; j++)
                     {
@@ -94,7 +94,7 @@ namespace AdnmbBackup_gui
                     }
                 }
                 label4.Text = "完成";
-                fpjson["replys"].Replace(contentJA);
+                fpjson["Replies"].Replace(contentJA);
                 var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
                 File.WriteAllText(path, fjsonstr);
             }
@@ -122,7 +122,7 @@ namespace AdnmbBackup_gui
                 sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
-            var ja = jo["replys"].ToObject<JArray>();
+            var ja = jo["Replies"].ToObject<JArray>();
             for (int i = 0; i < ja.Count; i++)
             {
                 sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
@@ -143,7 +143,7 @@ namespace AdnmbBackup_gui
                 sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
-            var ja = jo["replys"].ToObject<JArray>();
+            var ja = jo["Replies"].ToObject<JArray>();
             var poid = jo["user_hash"].ToString();
             for (int i = 0; i < ja.Count; i++)
             {
@@ -217,10 +217,10 @@ namespace AdnmbBackup_gui
                         var bytes = t2.Result;
                         var str = ReadGzip(bytes);
                         var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                        var replyCount = int.Parse(fpjson["replyCount"].ToString());
+                        var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                         int pageCount = replyCount / 19;
                         if (replyCount % pageCount != 0) pageCount++;
-                        JArray contentJA = fpjson["replys"].ToObject<JArray>();
+                        JArray contentJA = fpjson["Replies"].ToObject<JArray>();
                         for (var page = 2; page <= pageCount; page++)
                         {
                             label4.Text = ">>" + id + " 正在获取第" + page + "页";
@@ -232,7 +232,7 @@ namespace AdnmbBackup_gui
                             bytes = t2.Result;
                             str = ReadGzip(bytes);
                             var jo = JsonConvert.DeserializeObject<JObject>(str);
-                            JArray ja = jo["replys"].ToObject<JArray>();
+                            JArray ja = jo["Replies"].ToObject<JArray>();
                             var rpcount = ja.Count;
                             for (int j = 0; j < rpcount; j++)
                             {
@@ -247,7 +247,7 @@ namespace AdnmbBackup_gui
                                 index--;
                             }
                         }
-                        fpjson["replys"].Replace(contentJA);
+                        fpjson["Replies"].Replace(contentJA);
                         var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
                         File.WriteAllText(path, fjsonstr);
                         ConvertToText(path);
