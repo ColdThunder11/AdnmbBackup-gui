@@ -42,14 +42,14 @@ namespace AdnmbBackup_gui
             string path = Path.Combine(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString(), id + ".json");
             try
             {
-                string url = "https://nmb.fastmirror.org/Api/thread";
+                string url = "https://api.nmb.best/Api/thread";
                 var cookie = File.ReadAllText("cookie.txt");
                 CookieContainer cookieContainer = new CookieContainer();
-                cookieContainer.Add(new Cookie("userhash", cookie, "/", "nmb.fastmirror.org"));
+                cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
                 HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
                 handler.CookieContainer = cookieContainer;
                 HttpClient http = new HttpClient(handler);
-                http.DefaultRequestHeaders.Add("Host", "nmb.fastmirror.org");
+                http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
                 http.DefaultRequestHeaders.Add("Accept", "application/json");
                 http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
                 http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
@@ -112,7 +112,7 @@ namespace AdnmbBackup_gui
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/ColdThunder11/AdnmbBackup-gui");
+            System.Diagnostics.Process.Start("https://github.com/Ovler-Young/AdnmbBackup-gui");
         }
         static void ConvertToText(string path)
         {
@@ -202,13 +202,13 @@ namespace AdnmbBackup_gui
                     {
                         string path = Path.Combine(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString(), id + ".json");
                         if (File.Exists(path)) continue;
-                        string url = "https://nmb.fastmirror.org/Api/thread";
+                        string url = "https://api.nmb.best/Api/thread";
                         CookieContainer cookieContainer = new CookieContainer();
-                        cookieContainer.Add(new Cookie("userhash", cookie, "/", "nmb.fastmirror.org"));
+                        cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
                         HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
                         handler.CookieContainer = cookieContainer;
                         HttpClient http = new HttpClient(handler);
-                        http.DefaultRequestHeaders.Add("Host", "nmb.fastmirror.org");
+                        http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
                         http.DefaultRequestHeaders.Add("Accept", "application/json");
                         http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 HavfunClient-AdnmbBackup");
                         label4.Text = ">>" + id + " 正在获取第1页";
