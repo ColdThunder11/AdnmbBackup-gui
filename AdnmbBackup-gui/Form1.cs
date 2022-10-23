@@ -57,8 +57,8 @@ namespace AdnmbBackup_gui
                 var t = http.GetAsync(url + "?id=" + id + "&page=1");
                 t.Wait();
                 var result = t.Result;
-                label4.Text = "0";
-                var t2 = result.Content.ReadAsStringAsync();
+                label4.Text = "5";
+                var t2 = result.Content.ReadAsByteArrayAsync();
                 t2.Wait();
                 var bytes = t2.Result;
                 var str = ReadGzip(bytes);
