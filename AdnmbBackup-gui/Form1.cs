@@ -25,6 +25,12 @@ namespace AdnmbBackup_gui
                 Directory.CreateDirectory("cache");
             if (!Directory.Exists("po"))
                 Directory.CreateDirectory("po");
+            if (!Directory.Exists("output"))
+                Directory.CreateDirectory("output");
+            if (!Directory.Exists("output\\po"))
+                Directory.CreateDirectory("output\\po");
+            if (!Directory.Exists("output\\all"))
+                Directory.CreateDirectory("output\\all");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -137,7 +143,8 @@ namespace AdnmbBackup_gui
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
-            File.WriteAllText(path.Replace("json", "txt"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace("json", "txt").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace("json", "txt").Replace("cache","output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
         }
         static void ConvertToTextPoOnly(string path)
         {
@@ -173,7 +180,8 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.txt"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
         }
         static string ContentProcess(string content)
         {
