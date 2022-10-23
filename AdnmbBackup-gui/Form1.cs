@@ -21,6 +21,10 @@ namespace AdnmbBackup_gui
         public Form1()
         {
             InitializeComponent();
+            if (!Directory.Exists("cache"))
+                Directory.CreateDirectory("cache");
+            if (!Directory.Exists("po"))
+                Directory.CreateDirectory("po");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -37,9 +41,12 @@ namespace AdnmbBackup_gui
                 MessageBox.Show("请先放好小饼干");
                 return;
             }
-            if (!Directory.Exists(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString()))
-                Directory.CreateDirectory(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString());
-            string path = Path.Combine(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString(), id + ".json");
+            string path = Path.Combine("cache", id + ".json");
+            string po = Path.Combine("po", id + ".txt");
+            if (File.Exists(po))
+                {
+                    string poid = File.ReadAllText(po);
+                }
             try
             {
                 string url = "https://api.nmb.best/Api/thread";
@@ -134,6 +141,7 @@ namespace AdnmbBackup_gui
         }
         static void ConvertToTextPoOnly(string path)
         {
+            var po_path = path.Replace("cache", "po").Replace("json", "txt");
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
             sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
@@ -145,6 +153,10 @@ namespace AdnmbBackup_gui
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
             var poid = jo["user_hash"].ToString();
+            if (File.Exists(po_path) && File.ReadAllText(po_path) != "")
+            {
+                poid = File.ReadAllText(po_path).Split(' ')[0];
+            }
             for (int i = 0; i < ja.Count; i++)
             {
                 if (ja[i]["user_hash"].ToString() == poid)
@@ -189,15 +201,13 @@ namespace AdnmbBackup_gui
                     return;
                 }
                 int errCount = 0;
-                if (!Directory.Exists(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString()))
-                    Directory.CreateDirectory(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString());
                 var cookie = File.ReadAllText("cookie.txt");
                 var ids = File.ReadAllLines("AtuobBackupList.txt");
                 foreach (var id in ids)
                 {
                     try
                     {
-                        string path = Path.Combine(DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString(), id + ".json");
+                        string path = Path.Combine("cache", id + ".json");
                         if (File.Exists(path)) continue;
                         string url = "https://api.nmb.best/Api/thread";
                         CookieContainer cookieContainer = new CookieContainer();
