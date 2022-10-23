@@ -151,7 +151,7 @@ namespace AdnmbBackup_gui
                 {
                     sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
                     sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
-                    sb.Append("N."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    sb.Append("No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
