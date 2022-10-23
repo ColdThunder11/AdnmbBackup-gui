@@ -57,16 +57,13 @@ namespace AdnmbBackup_gui
                 var t = http.GetAsync(url + "?id=" + id + "&page=1");
                 t.Wait();
                 var result = t.Result;
-                label4.Text = "5";
                 var t2 = result.Content.ReadAsByteArrayAsync();
                 t2.Wait();
                 var bytes = t2.Result;
                 var str = ReadGzip(bytes);
                 label4.Text = str;
                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                label4.Text = "1";
                 var replyCount = int.Parse(fpjson["replyCount"].ToString());
-                label4.Text = "2";
                 int pageCount = replyCount / 19;
                 if (replyCount % pageCount != 0) pageCount++;
                 JArray contentJA = fpjson["replys"].ToObject<JArray>();
@@ -90,7 +87,7 @@ namespace AdnmbBackup_gui
                 }
                 for (var index = 0; index < contentJA.Count; index++)
                 {
-                    if (contentJA[index]["title"].ToString() == "广告")
+                    if (contentJA[index]["user_hash"].ToString() == "Tips")
                     {
                         contentJA.RemoveAt(index);
                         index--;
@@ -118,7 +115,7 @@ namespace AdnmbBackup_gui
         {
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
-            sb.Append(jo["userid"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
             sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
             if (jo["title"].ToString() != "无标题")
             {
@@ -129,7 +126,7 @@ namespace AdnmbBackup_gui
             for (int i = 0; i < ja.Count; i++)
             {
                 sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
-                sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
@@ -139,7 +136,7 @@ namespace AdnmbBackup_gui
         {
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
-            sb.Append(jo["userid"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
             sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
             if (jo["title"].ToString() != "无标题")
             {
@@ -147,13 +144,13 @@ namespace AdnmbBackup_gui
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["replys"].ToObject<JArray>();
-            var poid = jo["userid"].ToString();
+            var poid = jo["user_hash"].ToString();
             for (int i = 0; i < ja.Count; i++)
             {
-                if (ja[i]["userid"].ToString() == poid)
+                if (ja[i]["user_hash"].ToString() == poid)
                 {
                     sb.Append("------------------------------------"); sb.Append(Environment.NewLine);
-                    sb.Append(ja[i]["userid"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                    sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                     sb.Append("N."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
@@ -244,7 +241,7 @@ namespace AdnmbBackup_gui
                         }
                         for (var index = 0; index < contentJA.Count; index++)
                         {
-                            if (contentJA[index]["title"].ToString() == "广告")
+                            if (contentJA[index]["user_hash"].ToString() == "Tips")
                             {
                                 contentJA.RemoveAt(index);
                                 index--;
