@@ -103,12 +103,11 @@ namespace AdnmbBackup_gui
                         str = ReadGzip(bytes);
                         var jo = JsonConvert.DeserializeObject<JObject>(str);
                         JArray ja = jo["Replies"].ToObject<JArray>();
-                        var rpcount = ja.Count;
-                        for (int j = 0; j < rpcount; j++)
+                        foreach (var item in ja)
                         {
-                            label4.Text = "正在合并第" + page + "页第" + j + "条";
-                            contentJA.Add(ja[j]);
+                            contentJA.Add(item);
                         }
+                        var rpcount = ja.Count;
                         label4.Text = "合并第" + page + "页完成";
                     }
                     for (var index = 0; index < contentJA.Count; index++)
