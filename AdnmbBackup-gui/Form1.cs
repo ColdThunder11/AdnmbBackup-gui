@@ -145,8 +145,8 @@ namespace AdnmbBackup_gui
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
-            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
-            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static void ConvertToTextPoOnly(string path)
         {
@@ -182,8 +182,8 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
-            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static void ConvertToMarkdown(string path)
         {
@@ -280,8 +280,8 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
-            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static void ConvertToMarkdownPoOnly(string path)
         {
@@ -354,8 +354,8 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
-            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static string ContentProcess(string content)
         {
