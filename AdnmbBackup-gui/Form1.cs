@@ -55,12 +55,12 @@ namespace AdnmbBackup_gui
             {
                 if (File.Exists(path))
                 {
-                    var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
-                    var ReplyCountInCache = jo["ReplyCount"].Value<int>();
+                    var joInCache = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+                    var ReplyCountInCache = joInCache["ReplyCount"].Value<int>();
                     int pageCountInCache = ReplyCountInCache / 19;
                     if (ReplyCountInCache % pageCountInCache != 0) pageCountInCache++;
                     // remove the last page to avoid duplication
-                    JArray contentJA = (JArray)jo["Content"];
+                    JArray contentJA = (JArray)joInCache["Content"];
                     for (var index = ReplyCountInCache; index > pageCountInCache * 19; index--)
                     {
                         // remove the last thread
@@ -94,17 +94,16 @@ namespace AdnmbBackup_gui
                     for (var page = pageCountInCache - 1; page <= pageCount; page++)
                     {
                         label4.Text = "正在获取第" + page + "页";
-                        var t3 = http.GetAsync(url + "?id=" + id + "&page=" + page);
-                        t3.Wait();
-                        var result2 = t3.Result;
-                        var t4 = result2.Content.ReadAsByteArrayAsync();
-                        t4.Wait();
-                        var bytes2 = t4.Result;
-                        var str2 = ReadGzip(bytes2);
-                        var json = JsonConvert.DeserializeObject<JObject>(str2);
-                        JArray ja = json["Content"].ToObject<JArray>();
+                        t = http.GetAsync(url + "?id=" + id + "&page=" + page);
+                        t.Wait();
+                        result = t.Result;
+                        t2 = result.Content.ReadAsByteArrayAsync();
+                        t2.Wait();
+                        bytes = t2.Result;
+                        str = ReadGzip(bytes);
+                        var jo = JsonConvert.DeserializeObject<JObject>(str);
+                        JArray ja = jo["Replies"].ToObject<JArray>();
                         var rpcount = ja.Count;
-                        label4.Text = "正在合并第" + page + "页";
                         for (int j = 0; j < rpcount; j++)
                         {
                             contentJA.Add(ja[j]);
@@ -120,7 +119,6 @@ namespace AdnmbBackup_gui
                         }
                     }
                     label4.Text = "完成";
-                    jo["ReplyCount"] = replyCount;
                     fpjson["Replies"].Replace(contentJA);
                     var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
                     File.WriteAllText(path, fjsonstr);
