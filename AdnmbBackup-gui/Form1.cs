@@ -198,7 +198,7 @@ namespace AdnmbBackup_gui
             {
                 sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
             }
-            if (jo["name"].ToString() != "")
+            if (jo["name"].ToString() != "无名氏")
             {
                 sb.Append("**"); sb.Append(jo["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
             }
@@ -252,7 +252,7 @@ namespace AdnmbBackup_gui
                     if (ja[i]["title"].ToString() != "无标题")
                     {
                         sb.Append("### "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
-                        if (ja[i]["name"].ToString() != "")
+                        if (ja[i]["name"].ToString() != "无名氏")
                         {
                             sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
                         }
@@ -266,7 +266,7 @@ namespace AdnmbBackup_gui
                     else
                     {
                         sb.Append("### "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
-                        if (ja[i]["name"].ToString() != "")
+                        if (ja[i]["name"].ToString() != "无名氏")
                         {
                             sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
                         }
@@ -296,7 +296,7 @@ namespace AdnmbBackup_gui
             {
                 sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
             }
-            if (jo["name"].ToString() != "")
+            if (jo["name"].ToString() != "无名氏")
             {
                 sb.Append("**"); sb.Append(jo["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
             }
@@ -326,7 +326,7 @@ namespace AdnmbBackup_gui
                     if (ja[i]["title"].ToString() != "无标题")
                     {
                         sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
-                        if (ja[i]["name"].ToString() != "")
+                        if (ja[i]["name"].ToString() != "无名氏")
                         {
                             sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
                         }
@@ -340,7 +340,7 @@ namespace AdnmbBackup_gui
                     else
                     {
                         sb.Append("## "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
-                        if (ja[i]["name"].ToString() != "")
+                        if (ja[i]["name"].ToString() != "无名氏")
                         {
                             sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
                         }
