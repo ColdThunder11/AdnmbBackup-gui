@@ -59,12 +59,16 @@ namespace AdnmbBackup_gui
                     var ReplyCountInCache = joInCache["ReplyCount"].Value<int>();
                     int pageCountInCache = ReplyCountInCache / 19;
                     if (ReplyCountInCache % pageCountInCache != 0) pageCountInCache++;
-                    // remove the last page to avoid duplication
-                    JArray contentJA = (JArray)joInCache["Content"];
-                    for (var index = ReplyCountInCache; index > pageCountInCache * 19; index--)
+                    // remove the Replies in the last page to avoid duplication
+                    // what should be mind is that the last page may not be full
+                    JArray contentJA = (JArray)joInCache["Replies"];
+                    for (int i = 0; i < contentJA.Count; i++)
                     {
-                        // remove the last thread
-                        contentJA.Remove(index);
+                        if (i >= (pageCountInCache - 1) * 19)
+                        {
+                            contentJA.RemoveAt(i);
+                            i--;
+                        }
                     }
                     string url = "https://api.nmb.best/Api/thread";
                     var cookie = File.ReadAllText("cookie.txt");
@@ -85,15 +89,13 @@ namespace AdnmbBackup_gui
                     t2.Wait();
                     var bytes = t2.Result;
                     var str = ReadGzip(bytes);
-                    label4.Text = str;
                     var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                     var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                     int pageCount = replyCount / 19;
                     if (replyCount % pageCount != 0) pageCount++;
-                    label4.Text = "共" + pageCount + "页，已缓存" + pageCountInCache + "页";
-                    for (var page = pageCountInCache - 1; page <= pageCount; page++)
+                    for (int page = pageCountInCache; page <= pageCount; page++)
                     {
-                        label4.Text = "正在获取第" + page + "页";
+                        label4.Text = "第" + page + "页";
                         t = http.GetAsync(url + "?id=" + id + "&page=" + page);
                         t.Wait();
                         result = t.Result;
@@ -107,13 +109,12 @@ namespace AdnmbBackup_gui
                         {
                             contentJA.Add(item);
                         }
-                        label4.Text = "合并第" + page + "页完成";
                     }
                     for (var index = 0; index < contentJA.Count; index++)
                     {
                         if (contentJA[index]["user_hash"].ToString() == "Tips")
                         {
-                            contentJA.RemoveAt(index);
+                            contentJA.Remove(index);
                             index--;
                         }
                     }
