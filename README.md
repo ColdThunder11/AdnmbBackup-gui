@@ -30,7 +30,7 @@ json文件为完整数据文件，txt为易读的文件
 │  ├─cookie.txt // 饼干
 │  ├─Newtonsoft.Json.dll
 │  ├─Newtonsoft.Json.xml
-│  ├─AutobBackupList.txt // 自动备份列表,一行一个,填id
+│  ├─AutoBackupList.txt // 自动备份列表,一行一个,填id
 ```
 
 TODO:

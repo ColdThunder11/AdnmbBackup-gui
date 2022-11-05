@@ -425,7 +425,7 @@ namespace AdnmbBackup_gui
                 }
                 int errCount = 0;
                 var cookie = File.ReadAllText("cookie.txt");
-                var ids = File.ReadAllLines("AutobBackupList.txt");
+                var ids = File.ReadAllLines("AutoBackupList.txt");
                 foreach (var id in ids)
                 {
                     try
