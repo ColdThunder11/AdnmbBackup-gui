@@ -106,6 +106,7 @@ namespace AdnmbBackup_gui
                         var rpcount = ja.Count;
                         for (int j = 0; j < rpcount; j++)
                         {
+                            label4.Text = "正在合并第" + page + "页第" + j + "条";
                             contentJA.Add(ja[j]);
                         }
                         label4.Text = "合并第" + page + "页完成";
