@@ -107,7 +107,6 @@ namespace AdnmbBackup_gui
                         {
                             contentJA.Add(item);
                         }
-                        var rpcount = ja.Count;
                         label4.Text = "合并第" + page + "页完成";
                     }
                     for (var index = 0; index < contentJA.Count; index++)
