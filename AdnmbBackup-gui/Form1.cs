@@ -207,7 +207,7 @@ namespace AdnmbBackup_gui
             {
                 sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
             }
-            sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
+            sb.Append(ContentProcess(jo["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
             var poid = new HashSet<string>();
             poid.Add(jo["user_hash"].ToString());
@@ -253,7 +253,7 @@ namespace AdnmbBackup_gui
                 {
                     sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
                 }
-                sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
+                sb.Append(ContentProcess(ja[i]["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
             }
             File.WriteAllText(path.Replace("json", "md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
             File.WriteAllText(path.Replace("json", "md").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
@@ -280,7 +280,7 @@ namespace AdnmbBackup_gui
             {
                 sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
             }
-            sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
+            sb.Append(ContentProcess(jo["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
             var poid = new HashSet<string>();
             poid.Add(jo["user_hash"].ToString());
@@ -315,7 +315,7 @@ namespace AdnmbBackup_gui
                     {
                         sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
                     }
-                    sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
+                    sb.Append(ContentProcess(ja[i]["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
                 }
             }
             File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
