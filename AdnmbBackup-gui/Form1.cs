@@ -118,7 +118,7 @@ namespace AdnmbBackup_gui
             }
             ConvertToText(path);
             ConvertToTextPoOnly(path);
-            ConvertToMarkdownText(path);
+            ConvertToMarkdown(path);
             ConvertToMarkdownTextPoOnly(path);
         }
 
@@ -185,7 +185,7 @@ namespace AdnmbBackup_gui
             File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
             File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
         }
-        static void ConvertToMarkdownText(string path)
+        static void ConvertToMarkdown(string path)
         {
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
@@ -193,12 +193,20 @@ namespace AdnmbBackup_gui
             {
                 sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
-                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);   
+                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+                if (jo["img"].ToString() != "")
+                {
+                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                }
             } else
             {
                 sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
                 sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+                if (jo["img"].ToString() != "")
+                {
+                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                }
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
@@ -209,19 +217,27 @@ namespace AdnmbBackup_gui
                     sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
                     sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                     sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    if (ja[i]["img"].ToString() != "")
+                    {
+                        sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                    }
                 }
                 else
                 {
                     sb.Append("## "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                     sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                     sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    if (ja[i]["img"].ToString() != "")
+                    {
+                        sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                    }
                 }
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
             File.WriteAllText(path.Replace("json", "md").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
             File.WriteAllText(path.Replace("json", "md").Replace("cache","output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
         }
-        static void ConvertToMarkdownTextPoOnly(string path)
+        static void ConvertToMarkdownPoOnly(string path)
         {
             var po_path = path.Replace("cache", "po").Replace("json", "txt");
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
@@ -231,12 +247,20 @@ namespace AdnmbBackup_gui
                 sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
                 sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+                if (jo["img"].ToString() != "")
+                {
+                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                }
             }
             else
             {
                 sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
                 sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+                if (jo["img"].ToString() != "")
+                {
+                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                }
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
@@ -260,12 +284,20 @@ namespace AdnmbBackup_gui
                         sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
                         sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                         sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                        if (ja[i]["img"].ToString() != "")
+                        {
+                            sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                        }
                     }
                     else
                     {
                         sb.Append("## "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                         sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                         sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                        if (ja[i]["img"].ToString() != "")
+                        {
+                            sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                        }
                     }
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
