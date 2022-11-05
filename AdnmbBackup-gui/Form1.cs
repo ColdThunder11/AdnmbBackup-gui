@@ -102,10 +102,12 @@ namespace AdnmbBackup_gui
                         var bytes2 = t4.Result;
                         var str2 = ReadGzip(bytes2);
                         var json = JsonConvert.DeserializeObject<JObject>(str2);
-                        var content = json["Content"];
-                        foreach (var item in content)
+                        label4.Text = "正在合并第" + page + "页";
+                        JArray ja = json["Content"].ToObject<JArray>();
+                        var rpcount = ja.Count;
+                        for (int j = 0; j < rpcount; j++)
                         {
-                            contentJA.Add(item);
+                            contentJA.Add(ja[j]);
                         }
                     }
                     for (var index = 0; index < contentJA.Count; index++)
