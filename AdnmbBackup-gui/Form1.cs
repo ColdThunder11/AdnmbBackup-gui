@@ -193,22 +193,20 @@ namespace AdnmbBackup_gui
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
-                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
-                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
-                if (jo["img"].ToString() != "")
-                {
-                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
-                }
             }
             else
             {
                 sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
-                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
-                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
-                if (jo["img"].ToString() != "")
-                {
-                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
-                }
+            }
+            if (jo["name"].ToString() != "")
+            {
+                sb.Append("**"); sb.Append(jo["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+            }
+            sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            if (jo["img"].ToString() != "")
+            {
+                sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
@@ -254,6 +252,10 @@ namespace AdnmbBackup_gui
                     if (ja[i]["title"].ToString() != "无标题")
                     {
                         sb.Append("### "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
+                        if (ja[i]["name"].ToString() != "")
+                        {
+                            sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+                        }
                         sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                         sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                         if (ja[i]["img"].ToString() != "")
@@ -264,6 +266,10 @@ namespace AdnmbBackup_gui
                     else
                     {
                         sb.Append("### "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                        if (ja[i]["name"].ToString() != "")
+                        {
+                            sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+                        }
                         sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                         sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                         if (ja[i]["img"].ToString() != "")
@@ -285,22 +291,20 @@ namespace AdnmbBackup_gui
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
-                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
-                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
-                if (jo["img"].ToString() != "")
-                {
-                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
-                }
             }
             else
             {
                 sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
-                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
-                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
-                if (jo["img"].ToString() != "")
-                {
-                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
-                }
+            }
+            if (jo["name"].ToString() != "")
+            {
+                sb.Append("**"); sb.Append(jo["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+            }
+            sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+            sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            if (jo["img"].ToString() != "")
+            {
+                sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
@@ -322,6 +326,10 @@ namespace AdnmbBackup_gui
                     if (ja[i]["title"].ToString() != "无标题")
                     {
                         sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
+                        if (ja[i]["name"].ToString() != "")
+                        {
+                            sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+                        }
                         sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                         sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                         if (ja[i]["img"].ToString() != "")
@@ -332,6 +340,10 @@ namespace AdnmbBackup_gui
                     else
                     {
                         sb.Append("## "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                        if (ja[i]["name"].ToString() != "")
+                        {
+                            sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+                        }
                         sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
                         sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                         if (ja[i]["img"].ToString() != "")
