@@ -10,22 +10,24 @@ json文件为完整数据文件，txt为易读的文件
 
 ```
 ├─AdnmbBackup-gui
+│  ├─po
+│  │  ├─*.txt // 内容将覆盖po的饼干。可多行，一行一个
 |  ├─cache
-|  |  ├─*.json
+|  |  ├─*.json // 原始数据文件，也即缓存文件
 |  ├─output
 |  |  ├─all
-|  |  |  ├─*.txt
-|  |  |  ├─*.md
+|  |  |  ├─*.txt // 串的所有内容的txt文件
+|  |  |  ├─*.md // 串的所有内容的md文件
 |  |  ├─po
-|  |  |  ├─*_po_only.txt
-|  |  |  ├─*_po_only.md
-|  |  ├─*.txt
-|  |  ├─*.md
-|  |  ├─*_po_only.txt
-|  |  ├─*_po_only.md
+|  |  |  ├─*_po_only.txt // po的内容的txt文件
+|  |  |  ├─*_po_only.md // po的内容的md文件
+|  |  ├─*.txt // 串的所有内容的txt文件
+|  |  ├─*.md // 串的所有内容的md文件
+|  |  ├─*_po_only.txt // po的内容的txt文件
+|  |  ├─*_po_only.md // po的内容的md文件
 |  ├─AdnmbBackup-gui.exe
 |  ├─AdnmbBackup-gui.exe.config
-│  ├─cookie.txt
+│  ├─cookie.txt // 饼干
 │  ├─Newtonsoft.Json.dll
 │  ├─Newtonsoft.Json.xml
 ```

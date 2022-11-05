@@ -29,6 +29,8 @@ namespace AdnmbBackup_gui
                 Directory.CreateDirectory("output\\po");
             if (!Directory.Exists("output\\all"))
                 Directory.CreateDirectory("output\\all");
+            if (!Directory.Exists("po"))
+                Directory.CreateDirectory("po");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -192,7 +194,6 @@ namespace AdnmbBackup_gui
             ConvertToMarkdown(path);
             ConvertToMarkdownPoOnly(path);
         }
-
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/Ovler-Young/AdnmbBackup-gui");
