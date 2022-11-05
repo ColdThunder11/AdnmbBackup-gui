@@ -90,7 +90,8 @@ namespace AdnmbBackup_gui
                     var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                     int pageCount = replyCount / 19;
                     if (replyCount % pageCount != 0) pageCount++;
-                    for (var page = pageCountInCache + 1; page <= pageCount; page++)
+                    label4.Text = "共" + pageCount + "页，已缓存" + pageCountInCache + "页";
+                    for (var page = pageCountInCache - 1; page <= pageCount; page++)
                     {
                         label4.Text = "正在获取第" + page + "页";
                         var t3 = http.GetAsync(url + "?id=" + id + "&page=" + page);
