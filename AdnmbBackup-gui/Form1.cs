@@ -119,7 +119,7 @@ namespace AdnmbBackup_gui
             ConvertToText(path);
             ConvertToTextPoOnly(path);
             ConvertToMarkdown(path);
-            ConvertToMarkdownTextPoOnly(path);
+            ConvertToMarkdownPoOnly(path);
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
