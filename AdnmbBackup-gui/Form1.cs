@@ -118,6 +118,8 @@ namespace AdnmbBackup_gui
             }
             ConvertToText(path);
             ConvertToTextPoOnly(path);
+            ConvertToMarkdownText(path);
+            ConvertToMarkdownTextPoOnly(path);
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -183,6 +185,94 @@ namespace AdnmbBackup_gui
             File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
             File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
         }
+        static void ConvertToMarkdownText(string path)
+        {
+            var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+            var sb = new StringBuilder();
+            if (jo["title"].ToString() != "无标题")
+            {
+                sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
+                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);   
+            } else
+            {
+                sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            }
+            sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
+            var ja = jo["Replies"].ToObject<JArray>();
+            for (int i = 0; i < ja.Count; i++)
+            {
+                if (ja[i]["title"].ToString() != "无标题")
+                {
+                    sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
+                    sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                    sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                }
+                else
+                {
+                    sb.Append("## "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                    sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                }
+                sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
+            }
+            File.WriteAllText(path.Replace("json", "md").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace("json", "md").Replace("cache","output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+        }
+        static void ConvertToMarkdownTextPoOnly(string path)
+        {
+            var po_path = path.Replace("cache", "po").Replace("json", "txt");
+            var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+            var sb = new StringBuilder();
+            if (jo["title"].ToString() != "无标题")
+            {
+                sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
+                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            }
+            else
+            {
+                sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+                sb.Append("作者： "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
+                sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            }
+            sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
+            var ja = jo["Replies"].ToObject<JArray>();
+            var poid = new HashSet<string>();
+            poid.Add(jo["user_hash"].ToString());
+            if (File.Exists(po_path) && File.ReadAllText(po_path) != "")
+            {
+                // read poid line by line
+                var lines = File.ReadAllLines(po_path);
+                foreach (var line in lines)
+                {
+                    poid.Add(line.Split(' ')[0]);
+                }
+            }
+            for (int i = 0; i < ja.Count; i++)
+            {
+                if (poid.Contains(ja[i]["user_hash"].ToString()))
+                {
+                    if (ja[i]["title"].ToString() != "无标题")
+                    {
+                        sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine);
+                        sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                        sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    }
+                    else
+                    {
+                        sb.Append("## "); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                        sb.Append("作者： "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                        sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    }
+                    sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
+                }
+            }
+            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+        }
         static string ContentProcess(string content)
         {
             return content.Replace("<font color=\"#789922\">&gt;&gt;", ">>").Replace("</font><br />", Environment.NewLine)
@@ -204,7 +294,6 @@ namespace AdnmbBackup_gui
             }
             return result;
         }
-
         private void Form1_Shown(object sender, EventArgs e)
         {
             if (File.Exists("AtuobBackupList.txt"))
