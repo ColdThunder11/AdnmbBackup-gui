@@ -23,14 +23,14 @@ namespace AdnmbBackup_gui
             InitializeComponent();
             if (!Directory.Exists("cache"))
                 Directory.CreateDirectory("cache");
-            if (!Directory.Exists("po"))
-                Directory.CreateDirectory("po");
             if (!Directory.Exists("output"))
                 Directory.CreateDirectory("output");
             if (!Directory.Exists("output\\po"))
                 Directory.CreateDirectory("output\\po");
             if (!Directory.Exists("output\\all"))
                 Directory.CreateDirectory("output\\all");
+            if (!Directory.Exists("po"))
+                Directory.CreateDirectory("po");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -50,76 +50,150 @@ namespace AdnmbBackup_gui
             string path = Path.Combine("cache", id + ".json");
             string po = Path.Combine("po", id + ".txt");
             if (File.Exists(po))
-                {
-                    string poid = File.ReadAllText(po);
-                }
+            {
+                string poid = File.ReadAllText(po);
+            }
             try
             {
-                string url = "https://api.nmb.best/Api/thread";
-                var cookie = File.ReadAllText("cookie.txt");
-                CookieContainer cookieContainer = new CookieContainer();
-                cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
-                HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
-                handler.CookieContainer = cookieContainer;
-                HttpClient http = new HttpClient(handler);
-                http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
-                http.DefaultRequestHeaders.Add("Accept", "application/json");
-                http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
-                http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
-                label4.Text = "正在获取第1页";
-                var t = http.GetAsync(url + "?id=" + id + "&page=1");
-                t.Wait();
-                var result = t.Result;
-                var t2 = result.Content.ReadAsByteArrayAsync();
-                t2.Wait();
-                var bytes = t2.Result;
-                var str = ReadGzip(bytes);
-                label4.Text = str;
-                var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
-                int pageCount = replyCount / 19;
-                if (replyCount % pageCount != 0) pageCount++;
-                JArray contentJA = fpjson["Replies"].ToObject<JArray>();
-                for (var page = 2; page <= pageCount; page++)
+                if (File.Exists(path))
                 {
-                    label4.Text = "正在获取第" + page + "页";
-                    t = http.GetAsync(url + "?id=" + id + "&page=" + page);
+                    var joInCache = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+                    var ReplyCountInCache = joInCache["ReplyCount"].Value<int>();
+                    int pageCountInCache = ReplyCountInCache / 19;
+                    if (ReplyCountInCache % pageCountInCache != 0) pageCountInCache++;
+                    // remove the Replies in the last page to avoid duplication
+                    // what should be mind is that the last page may not be full
+                    JArray contentJA = (JArray)joInCache["Replies"];
+                    for (int i = 0; i < contentJA.Count; i++)
+                    {
+                        if (i >= (pageCountInCache - 1) * 19)
+                        {
+                            contentJA.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    string url = "https://api.nmb.best/Api/thread";
+                    var cookie = File.ReadAllText("cookie.txt");
+                    CookieContainer cookieContainer = new CookieContainer();
+                    cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
+                    HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
+                    handler.CookieContainer = cookieContainer;
+                    HttpClient http = new HttpClient(handler);
+                    http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
+                    http.DefaultRequestHeaders.Add("Accept", "application/json");
+                    http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+                    http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
+                    label4.Text = "正在更新总页数（获取第一页）";
+                    var t = http.GetAsync(url + "?id=" + id + "&page=1");
                     t.Wait();
-                    result = t.Result;
-                    t2 = result.Content.ReadAsByteArrayAsync();
+                    var result = t.Result;
+                    var t2 = result.Content.ReadAsByteArrayAsync();
                     t2.Wait();
-                    bytes = t2.Result;
-                    str = ReadGzip(bytes);
-                    var jo = JsonConvert.DeserializeObject<JObject>(str);
-                    JArray ja = jo["Replies"].ToObject<JArray>();
-                    var rpcount = ja.Count;
-                    for (int j = 0; j < rpcount; j++)
+                    var bytes = t2.Result;
+                    var str = ReadGzip(bytes);
+                    var fpjson = JsonConvert.DeserializeObject<JObject>(str);
+                    var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
+                    int pageCount = replyCount / 19;
+                    if (replyCount % pageCount != 0) pageCount++;
+                    for (int page = pageCountInCache; page <= pageCount; page++)
                     {
-                        contentJA.Add(ja[j]);
+                        label4.Text = "第" + page + "页";
+                        t = http.GetAsync(url + "?id=" + id + "&page=" + page);
+                        t.Wait();
+                        result = t.Result;
+                        t2 = result.Content.ReadAsByteArrayAsync();
+                        t2.Wait();
+                        bytes = t2.Result;
+                        str = ReadGzip(bytes);
+                        var jo = JsonConvert.DeserializeObject<JObject>(str);
+                        JArray ja = jo["Replies"].ToObject<JArray>();
+                        foreach (var item in ja)
+                        {
+                            contentJA.Add(item);
+                        }
                     }
+                    for (var index = 0; index < contentJA.Count; index++)
+                    {
+                        if (contentJA[index]["user_hash"].ToString() == "Tips")
+                        {
+                            contentJA.Remove(index);
+                            index--;
+                        }
+                    }
+                    label4.Text = "完成";
+                    fpjson["Replies"].Replace(contentJA);
+                    var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
+                    File.WriteAllText(path, fjsonstr);
                 }
-                for (var index = 0; index < contentJA.Count; index++)
+                else
                 {
-                    if (contentJA[index]["user_hash"].ToString() == "Tips")
+                    string url = "https://api.nmb.best/Api/thread";
+                    var cookie = File.ReadAllText("cookie.txt");
+                    CookieContainer cookieContainer = new CookieContainer();
+                    cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
+                    HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
+                    handler.CookieContainer = cookieContainer;
+                    HttpClient http = new HttpClient(handler);
+                    http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
+                    http.DefaultRequestHeaders.Add("Accept", "application/json");
+                    http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+                    http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
+                    label4.Text = "正在更新总页数（获取第一页）";
+                    var t = http.GetAsync(url + "?id=" + id + "&page=1");
+                    t.Wait();
+                    var result = t.Result;
+                    var t2 = result.Content.ReadAsByteArrayAsync();
+                    t2.Wait();
+                    var bytes = t2.Result;
+                    var str = ReadGzip(bytes);
+                    label4.Text = str;
+                    var fpjson = JsonConvert.DeserializeObject<JObject>(str);
+                    var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
+                    int pageCount = replyCount / 19;
+                    if (replyCount % pageCount != 0) pageCount++;
+                    JArray contentJA = fpjson["Replies"].ToObject<JArray>();
+                    for (var page = 2; page <= pageCount; page++)
                     {
-                        contentJA.RemoveAt(index);
-                        index--;
+                        label4.Text = "正在获取第" + page + "页";
+                        t = http.GetAsync(url + "?id=" + id + "&page=" + page);
+                        t.Wait();
+                        result = t.Result;
+                        t2 = result.Content.ReadAsByteArrayAsync();
+                        t2.Wait();
+                        bytes = t2.Result;
+                        str = ReadGzip(bytes);
+                        var jo = JsonConvert.DeserializeObject<JObject>(str);
+                        JArray ja = jo["Replies"].ToObject<JArray>();
+                        var rpcount = ja.Count;
+                        for (int j = 0; j < rpcount; j++)
+                        {
+                            contentJA.Add(ja[j]);
+                        }
                     }
+                    for (var index = 0; index < contentJA.Count; index++)
+                    {
+                        if (contentJA[index]["user_hash"].ToString() == "Tips")
+                        {
+                            contentJA.RemoveAt(index);
+                            index--;
+                        }
+                    }
+                    label4.Text = "完成";
+                    fpjson["Replies"].Replace(contentJA);
+                    var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
+                    File.WriteAllText(path, fjsonstr);
                 }
-                label4.Text = "完成";
-                fpjson["Replies"].Replace(contentJA);
-                var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
-                File.WriteAllText(path, fjsonstr);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 return;
             }
             ConvertToText(path);
             ConvertToTextPoOnly(path);
+            ConvertToMarkdown(path);
+            ConvertToMarkdownPoOnly(path);
         }
-
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/Ovler-Young/AdnmbBackup-gui");
@@ -143,8 +217,8 @@ namespace AdnmbBackup_gui
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
-            File.WriteAllText(path.Replace("json", "txt").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
-            File.WriteAllText(path.Replace("json", "txt").Replace("cache","output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static void ConvertToTextPoOnly(string path)
         {
@@ -180,8 +254,144 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
-            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache","output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("GB2312"));
+            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+        }
+        static void ConvertToMarkdown(string path)
+        {
+            var po_path = path.Replace("cache", "po").Replace("json", "txt");
+            var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+            var sb = new StringBuilder();
+            if (jo["title"].ToString() != "无标题")
+            {
+                sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+            }
+            else
+            {
+                sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+            }
+            if (jo["name"].ToString() != "无名氏" && jo["name"].ToString() != "")
+            {
+                sb.Append("**"); sb.Append(jo["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+            }
+            sb.Append("No."); sb.Append(jo["id"].ToString()); sb.Append("  "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString()); sb.Append(Environment.NewLine);
+            if (jo["img"].ToString() != "")
+            {
+                sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+            }
+            sb.Append(ContentProcess(jo["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
+            var ja = jo["Replies"].ToObject<JArray>();
+            var poid = new HashSet<string>();
+            poid.Add(jo["user_hash"].ToString());
+            if (File.Exists(po_path) && File.ReadAllText(po_path) != "")
+            {
+                // read poid line by line
+                var lines = File.ReadAllLines(po_path);
+                foreach (var line in lines)
+                {
+                    poid.Add(line.Split(' ')[0]);
+                }
+            }
+            for (int i = 0; i < ja.Count; i++)
+            {
+                if (poid.Contains(ja[i]["user_hash"].ToString()))
+                {
+                    if (ja[i]["title"].ToString() != "无标题")
+                    {
+                        sb.Append(Environment.NewLine); sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                    }
+                    else
+                    {
+                        sb.Append(Environment.NewLine); sb.Append("## No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                    }
+                }
+                else
+                {
+                    if (ja[i]["title"].ToString() != "无标题")
+                    {
+                        sb.Append(Environment.NewLine); sb.Append("### "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                    }
+                    else
+                    {
+                        sb.Append(Environment.NewLine); sb.Append("### No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                    }
+                }
+                if (ja[i]["name"].ToString() != "无名氏" && ja[i]["name"].ToString() != "")
+                {
+                    sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+                }
+                sb.Append("No."); sb.Append(ja[i]["id"].ToString()); sb.Append("  "); sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString()); sb.Append(Environment.NewLine);
+                if (ja[i]["img"].ToString() != "")
+                {
+                    sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                }
+                sb.Append(ContentProcess(ja[i]["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
+            }
+            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+        }
+        static void ConvertToMarkdownPoOnly(string path)
+        {
+            var po_path = path.Replace("cache", "po").Replace("json", "txt");
+            var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+            var sb = new StringBuilder();
+            if (jo["title"].ToString() != "无标题")
+            {
+                sb.Append(Environment.NewLine); sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+            }
+            else
+            {
+                sb.Append(Environment.NewLine); sb.Append("# "); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+            }
+            if (jo["name"].ToString() != "无名氏" && jo["name"].ToString() != "")
+            {
+                sb.Append("**"); sb.Append(jo["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+            }
+            sb.Append("No."); sb.Append(jo["id"].ToString()); sb.Append("  "); sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString()); sb.Append(Environment.NewLine);
+            if (jo["img"].ToString() != "")
+            {
+                sb.Append("![image](https://image.nmb.best/image/"); sb.Append(jo["img"].ToString()); sb.Append(jo["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+            }
+            sb.Append(ContentProcess(jo["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
+            var ja = jo["Replies"].ToObject<JArray>();
+            var poid = new HashSet<string>();
+            poid.Add(jo["user_hash"].ToString());
+            if (File.Exists(po_path) && File.ReadAllText(po_path) != "")
+            {
+                // read poid line by line
+                var lines = File.ReadAllLines(po_path);
+                foreach (var line in lines)
+                {
+                    poid.Add(line.Split(' ')[0]);
+                }
+            }
+            for (int i = 0; i < ja.Count; i++)
+            {
+                if (poid.Contains(ja[i]["user_hash"].ToString()))
+                {
+                    if (ja[i]["title"].ToString() != "无标题")
+                    {
+                        sb.Append(Environment.NewLine); sb.Append("## "); sb.Append(ja[i]["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                    }
+                    else
+                    {
+                        sb.Append(Environment.NewLine); sb.Append("## No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                    }
+                    if (ja[i]["name"].ToString() != "无名氏" && ja[i]["name"].ToString() != "")
+                    {
+                        sb.Append("**"); sb.Append(ja[i]["name"].ToString()); sb.Append("**"); sb.Append(Environment.NewLine);
+                    }
+                    sb.Append(ja[i]["user_hash"].ToString()); sb.Append("  "); sb.Append(ja[i]["now"].ToString());
+                    sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
+                    if (ja[i]["img"].ToString() != "")
+                    {
+                        sb.Append("![image](https://image.nmb.best/image/"); sb.Append(ja[i]["img"].ToString()); sb.Append(ja[i]["ext"].ToString()); sb.Append(")"); sb.Append(Environment.NewLine);
+                    }
+                    sb.Append(ContentProcess(ja[i]["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
+                }
+            }
+            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static string ContentProcess(string content)
         {
@@ -204,7 +414,6 @@ namespace AdnmbBackup_gui
             }
             return result;
         }
-
         private void Form1_Shown(object sender, EventArgs e)
         {
             if (File.Exists("AtuobBackupList.txt"))
@@ -216,66 +425,155 @@ namespace AdnmbBackup_gui
                 }
                 int errCount = 0;
                 var cookie = File.ReadAllText("cookie.txt");
-                var ids = File.ReadAllLines("AtuobBackupList.txt");
+                var ids = File.ReadAllLines("AutoBackupList.txt");
                 foreach (var id in ids)
                 {
                     try
                     {
                         string path = Path.Combine("cache", id + ".json");
-                        if (File.Exists(path)) continue;
-                        string url = "https://api.nmb.best/Api/thread";
-                        CookieContainer cookieContainer = new CookieContainer();
-                        cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
-                        HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
-                        handler.CookieContainer = cookieContainer;
-                        HttpClient http = new HttpClient(handler);
-                        http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
-                        http.DefaultRequestHeaders.Add("Accept", "application/json");
-                        http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 HavfunClient-AdnmbBackup");
-                        label4.Text = ">>" + id + " 正在获取第1页";
-                        var t = http.GetAsync(url + "?id=" + id + "&page=1");
-                        t.Wait();
-                        var result = t.Result;
-                        var t2 = result.Content.ReadAsByteArrayAsync();
-                        t2.Wait();
-                        var bytes = t2.Result;
-                        var str = ReadGzip(bytes);
-                        var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                        var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
-                        int pageCount = replyCount / 19;
-                        if (replyCount % pageCount != 0) pageCount++;
-                        JArray contentJA = fpjson["Replies"].ToObject<JArray>();
-                        for (var page = 2; page <= pageCount; page++)
+                        string po = Path.Combine("po", id + ".txt");
+                        if (File.Exists(po))
                         {
-                            label4.Text = ">>" + id + " 正在获取第" + page + "页";
-                            t = http.GetAsync(url + "?id=" + id + "&page=" + page);
-                            t.Wait();
-                            result = t.Result;
-                            t2 = result.Content.ReadAsByteArrayAsync();
-                            t2.Wait();
-                            bytes = t2.Result;
-                            str = ReadGzip(bytes);
-                            var jo = JsonConvert.DeserializeObject<JObject>(str);
-                            JArray ja = jo["Replies"].ToObject<JArray>();
-                            var rpcount = ja.Count;
-                            for (int j = 0; j < rpcount; j++)
+                            string poid = File.ReadAllText(po);
+                        }
+                        try
+                        {
+                            if (File.Exists(path))
                             {
-                                contentJA.Add(ja[j]);
+                                var joInCache = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+                                var ReplyCountInCache = joInCache["ReplyCount"].Value<int>();
+                                int pageCountInCache = ReplyCountInCache / 19;
+                                if (ReplyCountInCache % pageCountInCache != 0) pageCountInCache++;
+                                // remove the Replies in the last page to avoid duplication
+                                // what should be mind is that the last page may not be full
+                                JArray contentJA = (JArray)joInCache["Replies"];
+                                for (int i = 0; i < contentJA.Count; i++)
+                                {
+                                    if (i >= (pageCountInCache - 1) * 19)
+                                    {
+                                        contentJA.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                string url = "https://api.nmb.best/Api/thread";
+                                CookieContainer cookieContainer = new CookieContainer();
+                                cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
+                                HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
+                                handler.CookieContainer = cookieContainer;
+                                HttpClient http = new HttpClient(handler);
+                                http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
+                                http.DefaultRequestHeaders.Add("Accept", "application/json");
+                                http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+                                http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
+                                label4.Text = "正在更新总页数（获取第一页）";
+                                var t = http.GetAsync(url + "?id=" + id + "&page=1");
+                                t.Wait();
+                                var result = t.Result;
+                                var t2 = result.Content.ReadAsByteArrayAsync();
+                                t2.Wait();
+                                var bytes = t2.Result;
+                                var str = ReadGzip(bytes);
+                                var fpjson = JsonConvert.DeserializeObject<JObject>(str);
+                                var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
+                                int pageCount = replyCount / 19;
+                                if (replyCount % pageCount != 0) pageCount++;
+                                for (int page = pageCountInCache; page <= pageCount; page++)
+                                {
+                                    label4.Text = "第" + page + "页";
+                                    t = http.GetAsync(url + "?id=" + id + "&page=" + page);
+                                    t.Wait();
+                                    result = t.Result;
+                                    t2 = result.Content.ReadAsByteArrayAsync();
+                                    t2.Wait();
+                                    bytes = t2.Result;
+                                    str = ReadGzip(bytes);
+                                    var jo = JsonConvert.DeserializeObject<JObject>(str);
+                                    JArray ja = jo["Replies"].ToObject<JArray>();
+                                    foreach (var item in ja)
+                                    {
+                                        contentJA.Add(item);
+                                    }
+                                }
+                                for (var index = 0; index < contentJA.Count; index++)
+                                {
+                                    if (contentJA[index]["user_hash"].ToString() == "Tips")
+                                    {
+                                        contentJA.Remove(index);
+                                        index--;
+                                    }
+                                }
+                                label4.Text = "完成";
+                                fpjson["Replies"].Replace(contentJA);
+                                var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
+                                File.WriteAllText(path, fjsonstr);
+                            }
+                            else
+                            {
+                                string url = "https://api.nmb.best/Api/thread";
+                                CookieContainer cookieContainer = new CookieContainer();
+                                cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
+                                HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
+                                handler.CookieContainer = cookieContainer;
+                                HttpClient http = new HttpClient(handler);
+                                http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
+                                http.DefaultRequestHeaders.Add("Accept", "application/json");
+                                http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+                                http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36");
+                                label4.Text = "正在更新总页数（获取第一页）";
+                                var t = http.GetAsync(url + "?id=" + id + "&page=1");
+                                t.Wait();
+                                var result = t.Result;
+                                var t2 = result.Content.ReadAsByteArrayAsync();
+                                t2.Wait();
+                                var bytes = t2.Result;
+                                var str = ReadGzip(bytes);
+                                label4.Text = str;
+                                var fpjson = JsonConvert.DeserializeObject<JObject>(str);
+                                var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
+                                int pageCount = replyCount / 19;
+                                if (replyCount % pageCount != 0) pageCount++;
+                                JArray contentJA = fpjson["Replies"].ToObject<JArray>();
+                                for (var page = 2; page <= pageCount; page++)
+                                {
+                                    label4.Text = "正在获取第" + page + "页";
+                                    t = http.GetAsync(url + "?id=" + id + "&page=" + page);
+                                    t.Wait();
+                                    result = t.Result;
+                                    t2 = result.Content.ReadAsByteArrayAsync();
+                                    t2.Wait();
+                                    bytes = t2.Result;
+                                    str = ReadGzip(bytes);
+                                    var jo = JsonConvert.DeserializeObject<JObject>(str);
+                                    JArray ja = jo["Replies"].ToObject<JArray>();
+                                    var rpcount = ja.Count;
+                                    for (int j = 0; j < rpcount; j++)
+                                    {
+                                        contentJA.Add(ja[j]);
+                                    }
+                                }
+                                for (var index = 0; index < contentJA.Count; index++)
+                                {
+                                    if (contentJA[index]["user_hash"].ToString() == "Tips")
+                                    {
+                                        contentJA.RemoveAt(index);
+                                        index--;
+                                    }
+                                }
+                                label4.Text = "完成";
+                                fpjson["Replies"].Replace(contentJA);
+                                var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
+                                File.WriteAllText(path, fjsonstr);
                             }
                         }
-                        for (var index = 0; index < contentJA.Count; index++)
+                        catch (Exception ex)
                         {
-                            if (contentJA[index]["user_hash"].ToString() == "Tips")
-                            {
-                                contentJA.RemoveAt(index);
-                                index--;
-                            }
+                            MessageBox.Show(ex.Message);
+                            return;
                         }
-                        fpjson["Replies"].Replace(contentJA);
-                        var fjsonstr = JsonConvert.SerializeObject(fpjson, Formatting.Indented);
-                        File.WriteAllText(path, fjsonstr);
                         ConvertToText(path);
                         ConvertToTextPoOnly(path);
+                        ConvertToMarkdown(path);
+                        ConvertToMarkdownPoOnly(path);
                     }
                     catch
                     {
