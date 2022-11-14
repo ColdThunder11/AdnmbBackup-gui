@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 
 namespace AdnmbBackup_gui
 {
@@ -189,24 +190,27 @@ namespace AdnmbBackup_gui
                 MessageBox.Show(ex.Message);
                 return;
             }
-            ConvertToText(path);
-            ConvertToTextPoOnly(path);
-            ConvertToMarkdown(path);
-            ConvertToMarkdownPoOnly(path);
+            ConvertToText(id);
+            ConvertToTextPoOnly(id);
+            ConvertToMarkdown(id);
+            ConvertToMarkdownPoOnly(id);
         }
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/Ovler-Young/AdnmbBackup-gui");
         }
-        static void ConvertToText(string path)
+        static void ConvertToText(string id)
         {
+            string path = Path.Combine("cache", id + ".json");
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
             sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
             sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            var savepath = Path.Combine("output", id + ".txt");
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
+                savepath = Path.Combine("output", id + "_" + jo["title"].ToString() + ".txt");
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
@@ -217,19 +221,21 @@ namespace AdnmbBackup_gui
                 sb.Append("  No."); sb.Append(ja[i]["id"].ToString()); sb.Append(Environment.NewLine);
                 sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
             }
-            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
-            File.WriteAllText(path.Replace("json", "txt").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(savepath, sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
-        static void ConvertToTextPoOnly(string path)
+        static void ConvertToTextPoOnly(string id)
         {
+            string path = Path.Combine("cache", id + ".json");
             var po_path = path.Replace("cache", "po").Replace("json", "txt");
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
             sb.Append(jo["user_hash"].ToString()); sb.Append("  "); sb.Append(jo["now"].ToString());
             sb.Append("  No."); sb.Append(jo["id"].ToString()); sb.Append(Environment.NewLine);
+            var savepath = Path.Combine("output", id + "_po_only.txt");
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("标题:"); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine);
+                savepath = Path.Combine("output", id + "_" + jo["title"].ToString() + "_po_only.txt");
             }
             sb.Append(ContentProcess(jo["content"].ToString())); sb.Append(Environment.NewLine);
             var ja = jo["Replies"].ToObject<JArray>();
@@ -254,17 +260,19 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString())); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
-            File.WriteAllText(path.Replace(".json", "_po_only.txt").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(savepath, sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
-        static void ConvertToMarkdown(string path)
+        static void ConvertToMarkdown(string id)
         {
+            string path = Path.Combine("cache", id + ".json");
             var po_path = path.Replace("cache", "po").Replace("json", "txt");
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
+            var savepath = Path.Combine("output", id + ".md");
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                savepath = Path.Combine("output", id + "_" + jo["title"].ToString() + ".md");
             }
             else
             {
@@ -327,17 +335,19 @@ namespace AdnmbBackup_gui
                 }
                 sb.Append(ContentProcess(ja[i]["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
             }
-            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
-            File.WriteAllText(path.Replace("json", "md").Replace("cache", "output\\all"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(savepath, sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
-        static void ConvertToMarkdownPoOnly(string path)
+        static void ConvertToMarkdownPoOnly(string id)
         {
+            string path = Path.Combine("cache", id + ".json");
             var po_path = path.Replace("cache", "po").Replace("json", "txt");
             var jo = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
             var sb = new StringBuilder();
+            var savepath = Path.Combine("output", id + "_po_only.md");
             if (jo["title"].ToString() != "无标题")
             {
                 sb.Append(Environment.NewLine); sb.Append("# "); sb.Append(jo["title"].ToString()); sb.Append(Environment.NewLine); sb.Append(Environment.NewLine);
+                savepath = Path.Combine("output", id + "_" + jo["title"].ToString() + "_po_only.md");
             }
             else
             {
@@ -390,8 +400,7 @@ namespace AdnmbBackup_gui
                     sb.Append(ContentProcess(ja[i]["content"].ToString().Replace("<b>", "**").Replace("</b>", "**").Replace("<small>", "`").Replace("</small>", "`"))); sb.Append(Environment.NewLine);
                 }
             }
-            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
-            File.WriteAllText(path.Replace(".json", "_po_only.md").Replace("cache", "output\\po"), sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
+            File.WriteAllText(savepath, sb.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
         }
         static string ContentProcess(string content)
         {
@@ -432,6 +441,7 @@ namespace AdnmbBackup_gui
                     {
                         string path = Path.Combine("cache", id + ".json");
                         string po = Path.Combine("po", id + ".txt");
+                        label2.Text = "正在备份：" + id;
                         if (File.Exists(po))
                         {
                             string poid = File.ReadAllText(po);
@@ -479,7 +489,6 @@ namespace AdnmbBackup_gui
                                 if (replyCount % pageCount != 0) pageCount++;
                                 for (int page = pageCountInCache; page <= pageCount; page++)
                                 {
-                                    label4.Text = "第" + page + "页";
                                     t = http.GetAsync(url + "?id=" + id + "&page=" + page);
                                     t.Wait();
                                     result = t.Result;
@@ -492,6 +501,10 @@ namespace AdnmbBackup_gui
                                     foreach (var item in ja)
                                     {
                                         contentJA.Add(item);
+                                    }
+                                    if (page % 10 == 0)
+                                    {
+                                        label4.Text = "第" + page + "页";
                                     }
                                 }
                                 for (var index = 0; index < contentJA.Count; index++)
