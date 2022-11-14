@@ -416,7 +416,7 @@ namespace AdnmbBackup_gui
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
-            if (File.Exists("AtuobBackupList.txt"))
+            if (File.Exists("AutoBackupList.txt"))
             {
                 if (!File.Exists("cookie.txt"))
                 {
