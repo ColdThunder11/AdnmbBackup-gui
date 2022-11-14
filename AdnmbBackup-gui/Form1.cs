@@ -110,15 +110,8 @@ namespace AdnmbBackup_gui
                         JArray ja = jo["Replies"].ToObject<JArray>();
                         foreach (var item in ja)
                         {
+                            if (item["user_hash"].ToString() == "Tips") continue;
                             contentJA.Add(item);
-                        }
-                    }
-                    for (var index = 0; index < contentJA.Count; index++)
-                    {
-                        if (contentJA[index]["user_hash"].ToString() == "Tips")
-                        {
-                            contentJA.Remove(index);
-                            index--;
                         }
                     }
                     label4.Text = "完成";
@@ -168,15 +161,8 @@ namespace AdnmbBackup_gui
                         var rpcount = ja.Count;
                         for (int j = 0; j < rpcount; j++)
                         {
+                            if (ja[j]["user_hash"].ToString() == "Tips") continue;
                             contentJA.Add(ja[j]);
-                        }
-                    }
-                    for (var index = 0; index < contentJA.Count; index++)
-                    {
-                        if (contentJA[index]["user_hash"].ToString() == "Tips")
-                        {
-                            contentJA.RemoveAt(index);
-                            index--;
                         }
                     }
                     label4.Text = "完成";
@@ -487,6 +473,7 @@ namespace AdnmbBackup_gui
                                 var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                                 int pageCount = replyCount / 19;
                                 if (replyCount % pageCount != 0) pageCount++;
+                                label4.Text = "第" + pageCountInCache + "页";
                                 for (int page = pageCountInCache; page <= pageCount; page++)
                                 {
                                     t = http.GetAsync(url + "?id=" + id + "&page=" + page);
@@ -500,19 +487,12 @@ namespace AdnmbBackup_gui
                                     JArray ja = jo["Replies"].ToObject<JArray>();
                                     foreach (var item in ja)
                                     {
+                                        if (item["user_hash"].ToString() == "Tips") continue;
                                         contentJA.Add(item);
                                     }
                                     if (page % 10 == 0)
                                     {
                                         label4.Text = "第" + page + "页";
-                                    }
-                                }
-                                for (var index = 0; index < contentJA.Count; index++)
-                                {
-                                    if (contentJA[index]["user_hash"].ToString() == "Tips")
-                                    {
-                                        contentJA.Remove(index);
-                                        index--;
                                     }
                                 }
                                 label4.Text = "完成";
@@ -561,15 +541,8 @@ namespace AdnmbBackup_gui
                                     var rpcount = ja.Count;
                                     for (int j = 0; j < rpcount; j++)
                                     {
+                                        if (ja[j]["user_hash"].ToString() == "Tips") continue;
                                         contentJA.Add(ja[j]);
-                                    }
-                                }
-                                for (var index = 0; index < contentJA.Count; index++)
-                                {
-                                    if (contentJA[index]["user_hash"].ToString() == "Tips")
-                                    {
-                                        contentJA.RemoveAt(index);
-                                        index--;
                                     }
                                 }
                                 label4.Text = "完成";
@@ -583,10 +556,10 @@ namespace AdnmbBackup_gui
                             MessageBox.Show(ex.Message);
                             return;
                         }
-                        ConvertToText(path);
-                        ConvertToTextPoOnly(path);
-                        ConvertToMarkdown(path);
-                        ConvertToMarkdownPoOnly(path);
+                        ConvertToText(id);
+                        ConvertToTextPoOnly(id);
+                        ConvertToMarkdown(id);
+                        ConvertToMarkdownPoOnly(id);
                     }
                     catch
                     {
