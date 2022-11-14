@@ -567,6 +567,7 @@ namespace AdnmbBackup_gui
                     }
                 }
                 label4.Text = "已完成自动备份，有" + errCount + "个串的备份存在错误";
+                label2.Text = "自动备份已完成，可在上方手动输入串号进行备份";
             }
         }
     }
