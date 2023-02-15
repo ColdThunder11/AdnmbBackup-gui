@@ -48,6 +48,7 @@ namespace AdnmbBackup_gui
                 MessageBox.Show("请先放好小饼干");
                 return;
             }
+            if (File.Exists("AutoBackupList.txt")) { if (!File.ReadAllLines("AutoBackupList.txt").Contains(id)) { File.AppendAllText("AutoBackupList.txt", id + Environment.NewLine); } }
             string path = Path.Combine("cache", id + ".json");
             string po = Path.Combine("po", id + ".txt");
             if (File.Exists(po))
@@ -93,7 +94,7 @@ namespace AdnmbBackup_gui
                     var bytes = t2.Result;
                     string str = null;
                     try { str = ReadGzip(bytes); }
-                    catch (Exception) { label4.Text = "串" + id + "可能已被删除"; return; }
+                    catch (Exception) { label4.Text = "串" + id + "可能已被删除"; MessageBox.Show("串" + id + "可能已被删除，本地仍保留缓存"); return; }
                     var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                     if (fpjson["Success"].ToString() == "False")
                     {
@@ -148,7 +149,7 @@ namespace AdnmbBackup_gui
                     var bytes = t2.Result;
                     string str = null;
                     try { str = ReadGzip(bytes); }
-                    catch (Exception) { label4.Text = "串" + id + "可能已被删除"; return; }
+                    catch (Exception) { label4.Text = "串" + id + "可能已被删除"; MessageBox.Show("串" + id + "可能已被删除，本地未能获取缓存"); return; }
                     if (str == "\u8be5\u4e32\u4e0d\u5b58\u5728")
                     {
                         MessageBox.Show("串" + id + "已被删");
@@ -440,13 +441,14 @@ namespace AdnmbBackup_gui
                 int errCount = 0;
                 var cookie = File.ReadAllText("cookie.txt");
                 var ids = File.ReadAllLines("AutoBackupList.txt");
+                var err = new List<string>();
                 foreach (var id in ids)
                 {
                     try
                     {
                         string path = Path.Combine("cache", id + ".json");
                         string po = Path.Combine("po", id + ".txt");
-                        label2.Text = "正在备份：" + id;
+                        label2.Text = "正在备份：" + id + "（" + (Array.IndexOf(ids, id) + 1) + "/" + ids.Length + "）";
                         if (File.Exists(po))
                         {
                             string poid = File.ReadAllText(po);
@@ -489,7 +491,7 @@ namespace AdnmbBackup_gui
                                 var bytes = t2.Result;
                                 string str = null;
                                 try { str = ReadGzip(bytes); }
-                                catch (Exception) { label4.Text = "串" + id + "可能已被删除"; errCount++; continue; }
+                                catch (Exception) { label4.Text = "串" + id + "可能已被删除"; errCount++; err.Add("[" + DateTime.Now.ToString() + "] 串 " + id + " 可能已被删除，最后备份于：" + File.GetLastWriteTime(path)); err.Add(" "); continue; }
                                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                                 var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                                 int pageCount = replyCount / 19;
@@ -542,7 +544,7 @@ namespace AdnmbBackup_gui
                                 var bytes = t2.Result;
                                 string str = null;
                                 try { str = ReadGzip(bytes); }
-                                catch (Exception) { label4.Text = "串" + id + "可能已被删除"; errCount++; continue; }
+                                catch (Exception) { label4.Text = "串" + id + "可能已被删除"; errCount++; err.Add("串" + id + "在使用Gzip解码时出错"); err.Add("本地无缓存"); continue; }
                                 label4.Text = str;
                                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                                 var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
@@ -589,8 +591,13 @@ namespace AdnmbBackup_gui
                         errCount++;
                     }
                 }
-                label4.Text = "已完成自动备份，有" + errCount + "个串的备份存在错误";
                 label2.Text = "自动备份已完成，可在上方手动输入串号进行备份";
+                if (errCount > 0)
+                {
+                    File.WriteAllLines("err.txt", err);
+                    label4.Text = "有 " + errCount + " 个串的备份存在错误，详见同目录下err.txt";
+                }
+                else { label4.Text = "自动备份已完成，可在上方手动输入串号继续进行备份"; }
             }
         }
     }
