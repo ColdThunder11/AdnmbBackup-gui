@@ -200,6 +200,11 @@ namespace AdnmbBackup_gui
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                // log the error
+                var err = new List<string>();
+                err.Add("[" + DateTime.Now.ToString() + "] 串 " + id + " 备份失败，错误信息：" + ex.Message);
+                err.Add(" ");
+                File.AppendAllLines("error.log", err);
                 return;
             }
             ConvertToText(id);
@@ -437,6 +442,81 @@ namespace AdnmbBackup_gui
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
+            if (File.Exists("uuid.txt"))
+            {
+                // read uuid 
+                var uuid = File.ReadAllText("uuid.txt");
+                // get cookie
+                if (!File.Exists("cookie.txt"))
+                {
+                    MessageBox.Show("请先放好小饼干");
+                    return;
+                }
+                int errCount = 0;
+                var err = new List<string>();
+                var cookie = File.ReadAllText("cookie.txt");
+                HashSet<string> ids; // Store the ids.
+                if (File.Exists("AutoBackupList.txt"))
+                {
+                    // Read the existing ids if the file already exists.
+                    ids = new HashSet<string>(File.ReadAllLines("AutoBackupList.txt"));
+                }
+                else
+                {
+                    // Otherwise, initialize a new HashSet.
+                    ids = new HashSet<string>();
+                }
+                int pageNo = 1;
+
+                // get ids via api
+                while (true) // We will break out of the loop when we get an empty response.
+                {
+                    string feedurl = String.Format("https://api.nmb.best/Api/feed?uuid={0}&page={1}", uuid, pageNo);
+                    label4.Text = "正在获取订阅串列表，第" + pageNo + "页，url：";
+                    CookieContainer cookieContainer = new CookieContainer();
+                    cookieContainer.Add(new Cookie("userhash", cookie, "/", "api.nmb.best"));
+                    HttpClientHandler handler = new HttpClientHandler() { UseCookies = true };
+                    handler.CookieContainer = cookieContainer;
+                    HttpClient http = new HttpClient(handler);
+                    http.DefaultRequestHeaders.Add("Host", "api.nmb.best");
+                    http.DefaultRequestHeaders.Add("Accept", "application/json");
+                    http.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+                    http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.0.0 Safari/537.36"); // todo: change to the App UA with github link
+                    label4.Text = "正在获取订阅串列表，第" + pageNo + "页";
+                    var t = http.GetAsync(feedurl);
+                    t.Wait();
+                    var result = t.Result;
+                    var t2 = result.Content.ReadAsByteArrayAsync();
+                    t2.Wait();
+                    var bytes = t2.Result;
+                    string str = null;
+                    try { 
+
+                        str = ReadGzip(bytes); 
+                        // If response is empty (i.e., "[]"), break out of the loop.
+                        if (str == "[]") break;
+                        // or length is smaller than 10
+                        if (str.Length < 10) break;
+
+                        var jArray = JArray.Parse(str);
+                        foreach (var item in jArray)
+                        {
+                            var id = item["id"].ToString();
+                            ids.Add(id); // If 'id' already exists, HashSet will automatically ignore it.
+                            label4.Text = "正在获取订阅串列表，第" + pageNo + "页，已获取" + ids.Count + "个订阅串";
+                        }
+
+                        pageNo += 1;
+                    }
+                    catch (Exception) { 
+                        label4.Text = "获取订阅串列表时出错"; errCount++; 
+                        err.Add("获取订阅串列表时出错"); err.Add(" ");
+                        break;
+                    }
+                }
+                // write ids to file
+                File.WriteAllLines("AutoBackupList.txt", ids);
+            }
             if (File.Exists("AutoBackupList.txt"))
             {
                 if (!File.Exists("cookie.txt"))
@@ -622,6 +702,7 @@ namespace AdnmbBackup_gui
                 }
                 else { label4.Text = "自动备份已完成，可在上方手动输入串号继续进行备份"; }
             }
+
         }
     }
 }
