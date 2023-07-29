@@ -43,6 +43,12 @@ namespace AdnmbBackup_gui
         {
             string id = textBox1.Text;
             if (id == string.Empty) return;
+            // 检查是否为纯数字
+            if (!id.All(char.IsDigit))
+            {
+                MessageBox.Show("请输入正确的串号");
+                return;
+            }
             if (!File.Exists("cookie.txt"))
             {
                 MessageBox.Show("请先放好小饼干");
@@ -197,8 +203,10 @@ namespace AdnmbBackup_gui
                 // log the error
                 var err = new List<string>();
                 err.Add("[" + DateTime.Now.ToString() + "] 串 " + id + " 备份失败，错误信息：" + ex.Message);
+                err.Add(ex.Message);
+                err.Add(ex.StackTrace);
                 err.Add(" ");
-                File.AppendAllLines("error.log", err);
+                File.AppendAllLines("err.txt", err);
                 return;
             }
             ConvertToText(id);
