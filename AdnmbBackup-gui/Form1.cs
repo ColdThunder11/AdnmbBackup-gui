@@ -102,10 +102,10 @@ namespace AdnmbBackup_gui
                     try { str = ReadGzip(bytes); }
                     catch (Exception) { label4.Text = "串" + id + "可能已被删除"; MessageBox.Show("串" + id + "可能已被删除，本地仍保留缓存"); return; }
                     var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                    if (fpjson["Success"].ToString() == "False")
+                    if (fpjson.ContainsKey("success"))
                     {
                         var errMessage = fpjson["error"].ToString();
-                        MessageBox.Show(id + "失败，错误信息：" + errMessage + "，请检查cookie是否正确");
+                        MessageBox.Show("备份" + id + "失败。" + errMessage + "，请检查cookie是否正确");
                     }
                     var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                     int pageCount = replyCount / 19;
@@ -161,12 +161,11 @@ namespace AdnmbBackup_gui
                         MessageBox.Show("串" + id + "已被删");
                         return;
                     }
-                    label4.Text = str;
                     var fpjson = JsonConvert.DeserializeObject<JObject>(str);
-                    if (fpjson["Success"].ToString() == "False")
+                    if (fpjson.ContainsKey("success"))
                     {
                         var errMessage = fpjson["error"].ToString();
-                        MessageBox.Show(id + "失败，错误信息：" + errMessage + "，请检查cookie是否正确");
+                        MessageBox.Show("备份" + id + "失败。" + errMessage + "，请检查cookie是否正确");
                     }
                     var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                     int pageCount = replyCount / 19;
@@ -641,7 +640,6 @@ namespace AdnmbBackup_gui
                                     MessageBox.Show("串" + id + "已被删");
                                     return;
                                 }
-                                label4.Text = str;
                                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                                 var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
                                 int pageCount = replyCount / 19;
