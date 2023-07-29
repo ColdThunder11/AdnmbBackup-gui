@@ -46,8 +46,20 @@ namespace AdnmbBackup_gui
             // 检查是否为纯数字
             if (!id.All(char.IsDigit))
             {
-                MessageBox.Show("请输入正确的串号");
-                return;
+                try
+                {
+                    id = new string(id.Where(char.IsDigit).ToArray());
+                    if (id.Length != 8)
+                    {
+                        MessageBox.Show("请输入正确的串号");
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("请输入正确的串号");
+                    return;
+                }
             }
             if (!File.Exists("cookie.txt"))
             {
