@@ -102,8 +102,11 @@ namespace AdnmbBackup_gui
                         MessageBox.Show(id + "失败，错误信息：" + errMessage + "，请检查cookie是否正确");
                     }
                     var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
-                    int pageCount = replyCount / 19;
-                    if (replyCount % pageCount != 0) pageCount++;
+                    int pageCount = 1;
+                    if (replyCount >= 19) {
+                        pageCount = replyCount / 19;
+                        if (replyCount % 19 != 0) pageCount++;
+                    }
                     for (int page = pageCountInCache; page <= pageCount; page++)
                     {
                         label4.Text = "第" + page + "页";
@@ -163,8 +166,11 @@ namespace AdnmbBackup_gui
                         MessageBox.Show(id + "失败，错误信息：" + errMessage + "，请检查cookie是否正确");
                     }
                     var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
-                    int pageCount = replyCount / 19;
-                    if (replyCount % pageCount != 0) pageCount++;
+                    int pageCount = 1;
+                    if (replyCount >= 19) {
+                        pageCount = replyCount / 19;
+                        if (replyCount % 19 != 0) pageCount++;
+                    }
                     JArray contentJA = fpjson["Replies"].ToObject<JArray>();
                     for (var page = 2; page <= pageCount; page++)
                     {
@@ -497,8 +503,11 @@ namespace AdnmbBackup_gui
                                 catch (Exception) { label4.Text = "串" + id + "可能已被删除"; errCount++; err.Add("[" + DateTime.Now.ToString() + "] 串 " + id + " 可能已被删除，最后备份于：" + File.GetLastWriteTime(path)); err.Add(" "); continue; }
                                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                                 var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
-                                int pageCount = replyCount / 19;
-                                if (replyCount % pageCount != 0) pageCount++;
+                                int pageCount = 1;
+                                if (replyCount >= 19) {
+                                    pageCount = replyCount / 19;
+                                    if (replyCount % 19 != 0) pageCount++;
+                                }
                                 label4.Text = "第" + pageCountInCache + "页";
                                 for (int page = pageCountInCache; page <= pageCount; page++)
                                 {
@@ -551,8 +560,11 @@ namespace AdnmbBackup_gui
                                 label4.Text = str;
                                 var fpjson = JsonConvert.DeserializeObject<JObject>(str);
                                 var replyCount = int.Parse(fpjson["ReplyCount"].ToString());
-                                int pageCount = replyCount / 19;
-                                if (replyCount % pageCount != 0) pageCount++;
+                                int pageCount = 1;
+                                if (replyCount >= 19) {
+                                    pageCount = replyCount / 19;
+                                    if (replyCount % 19 != 0) pageCount++;
+                                }
                                 JArray contentJA = fpjson["Replies"].ToObject<JArray>();
                                 for (var page = 2; page <= pageCount; page++)
                                 {
