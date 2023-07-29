@@ -6,7 +6,12 @@
 
 备份需要获取饼干，这里是[饼干获取教程](https://www.coldthunder11.com/index.php/2020/03/19/%e5%a6%82%e4%bd%95%e8%8e%b7%e5%8f%96a%e5%b2%9b%e7%9a%84%e9%a5%bc%e5%b9%b2/)
 
-支持批量自动备份，在程序目录下新建`AutoBackupList.txt`将需要自动备份的串号填入（一行一个），每天第一次打开会自动备份
+支持批量自动备份，方法如下：
+
+1. 在程序目录下新建`uuid.txt`，写入移动端订阅id，每次打开会自动将所有订阅的串号加入自动备份列表
+2. 在程序目录下新建`AutoBackupList.txt`，可以手动加入其他需要备份的串号填入（一行一个）
+
+每天第一次打开会自动备份所有在`AutoBackupList.txt`中的串，备份文件在`output`文件夹中。
 
 需要 .net framework4.8。
 
